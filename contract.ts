@@ -16,13 +16,19 @@ export class BeamContract<T> {
   ) {
   }
 
-  protected async execute(data: T) {
-    return await this.client.invokeContract({
+  protected async execute(data: T, parse = true) {
+    const result = await this.client.invokeContract({
       contract: typeof this.contract !== "string" ? this.contract : undefined,
       contract_file: typeof this.contract === "string"
         ? this.contract
         : undefined,
-      args: serializeObject<T>({ ...data, create_tx: false, CID: this.CID }),
+      args: serializeObject<T>({ ...data, create_tx: false, cid: this.CID }),
     });
+
+    if (parse) {
+      return JSON.parse(result.output).res
+    }
+
+    return result
   }
 }

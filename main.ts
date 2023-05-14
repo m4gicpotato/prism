@@ -60,6 +60,11 @@ export class PrismClient extends RpcClient {
   // Version of the API
   public static API_VERSION = "7.3";
 
+  async currentHeight(): Promise<number> {
+    const { current_height } = await this.walletStatus();
+    return current_height;
+  }
+
   /**
    * Creates a new receiver address.
    *

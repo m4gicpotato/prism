@@ -13,9 +13,9 @@ export interface PoolsView {
 
 export interface PoolView {
   action: "pool_view";
-  aid1: string;
-  aid2: string;
-  kind: string;
+  aid1: number;
+  aid2: number;
+  kind: number;
 }
 
 export interface ViewDeployed {

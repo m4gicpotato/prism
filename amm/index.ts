@@ -1,4 +1,5 @@
 import { BeamContract } from "../contract.ts";
+import { parseAssetMetadata } from "../utils/parseAssetMetadata.ts";
 import {
   PoolAddLiquidity,
   PoolCreate,
@@ -9,6 +10,13 @@ import {
   ViewAllAssets,
   ViewDeployed,
 } from "./types.ts";
+
+// https://github.com/BeamMW/beam/blob/94c8deaaa76c0f81a986c25da9ff1ccbc41b6ac4/bvm/Shaders/amm/contract.h#L50
+export enum FeeSettings {
+  LOW_VOLATILITY = 0, // 0.05%
+  MEDIUM_VOLATILITY = 1, // 0.3%
+  HIGH_VOLATILITY = 2, // 1%
+}
 
 // https://github.com/BeamMW/beam/blob/7af0d255f53ec8cfcf17dbb36ecfecdc78995991/bvm/Shaders/amm/app.cpp
 
@@ -23,9 +31,14 @@ export class BeamAMM extends BeamContract<
   | PoolWithdraw
 > {
   async loadAssetsList() {
-    return await this.execute({
+    const assets = await this.execute({
       action: "view_all_assets",
     });
+    for (const asset in assets) {
+      assets[asset] = {...assets[asset], ...parseAssetMetadata(assets[asset].metadata)}
+      delete assets[asset].metadata
+    }
+    return assets
   }
 
   async loadPoolsList() {
@@ -34,7 +47,7 @@ export class BeamAMM extends BeamContract<
     });
   }
 
-  async loadPoolList(pool: { aid1: string; aid2: string; kind: string }) {
+  async loadPoolList(pool: { aid1: number; aid2: number; kind: number }) {
     return await this.execute({
       action: "pool_view",
       ...pool,
