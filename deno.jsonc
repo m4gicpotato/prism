@@ -1,0 +1,6 @@
+{
+  "tasks": {
+    "dev": "deno run --watch demo.ts",
+    "start": "deno run --unstable --no-prompt --allow-env --allow-read=. --allow-net='127.0.0.1:10000' demo.ts"
+  }
+}
